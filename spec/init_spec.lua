@@ -39,7 +39,7 @@ describe("Chatting", function()
 
 	it("boss attaches to dude1", function()
 		spy.on(minetest, "chat_send_player")
-		boss:send_chat_message("/watch dude1")
+		players.boss:send_chat_message("/watch dude1")
 		assert.spy(minetest.chat_send_player).was.called()
 	end)
 --[[
