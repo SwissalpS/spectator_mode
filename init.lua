@@ -9,98 +9,157 @@ spectator_mode = {
 	command_deny = 'smn',
 	command_detach = 'unwatch',
 	command_invite = 'watchme',
-	watchme_timeout = 1 * 60,
+	invitation_timeout = 1 * 60,
+	priv_invite = 'interact',
+	priv_watch = 'watch',
 }
 local sm = spectator_mode
+local after = minetest.after
 local chat = minetest.chat_send_player
+local deserialize = minetest.deserialize
+local serialize = minetest.serialize
+local get_player_privs = minetest.get_player_privs
+local set_player_privs = minetest.set_player_privs
+local get_player_by_name = minetest.get_player_by_name
+local vector_new = vector.new
+local vector_round = vector.round
 
--- list of saved states indexed by player name
+-- cache of saved states indexed by player name
+-- original_state['watcher'] = state
 local original_state = {}
--- list of pending invites indexed by invited player name
--- each entry contains the name of the player who sent the invite
+-- hash-table of pending invites
+-- invites['invited_player'] = 'inviting_player'
 local invites = {}
 
 
-minetest.register_privilege("watch", {
-	description = "Player can watch other players",
-	give_to_singleplayer = false,
-	give_to_admin = true,
-})
+-- TODO: maybe we need to run this after all mods have loaded?
+if not minetest.registered_privileges[sm.priv_watch] then
+	minetest.register_privilege(sm.priv_watch, {
+		description = 'Player can watch other players.',
+		give_to_singleplayer = false,
+		give_to_admin = true,
+	})
+end
+
+if not minetest.registered_privileges[sm.priv_invite] then
+	minetest.register_privilege(sm.priv_invite, {
+		description = 'Player can invite other players to watch them.',
+		give_to_singleplayer = false,
+		give_to_admin = true,
+	})
+end
+
+
+-- TODO: consider making this public
+local function original_state_get(player)
+	if not player or not player:is_player() then return end
+
+	-- check cache
+	local state = original_state[player:get_player_name()]
+	if state then return state end
+
+	-- fallback to player's meta
+	return deserialize(player:get_meta():get_string('spectator_mode_state'))
+end
+
+
+local function original_state_set(player, state)
+	if not player or not player:is_player() then return end
+
+	-- save to cache
+	original_state[player:get_player_name()] = state
+
+	-- backup to player's meta
+	player:get_meta():set_string('spectator_mode_state', serialize(state))
+end
+
+
+local function original_state_delete(player)
+	if not player or not player:is_player() then return end
+	-- remove from cache
+	original_state[player:get_player_name()] =
+	-- remove backup
+	player:get_meta():set_string('spectator_mode_state', '')
+end
 
 
 local function turn_off_hud_flags(player)
 	local flags = player:hud_get_flags()
 	local new_hud_flags = {}
-
 	for flag in pairs(flags) do
 		new_hud_flags[flag] = false
 	end
-
 	player:hud_set_flags(new_hud_flags)
 end
 
 
 -- called by the detach command '/unwatch'
--- also called on logout if player is attached at that time
+-- called on logout if player is attached at that time
+-- called before attaching to another player
 local function detach(name)
 	-- nothing to do
 	if not player_api.player_attached[name] then return end
 
-	local watcher = minetest.get_player_by_name(name)
+	local watcher = get_player_by_name(name)
 	if not watcher then return end -- shouldn't ever happen
 
 	watcher:set_detach()
 	player_api.player_attached[name] = false
-	watcher:set_eye_offset(vector.new(), vector.new())
+	watcher:set_eye_offset(vector_new(), vector_new())
 
-	local saved_state = original_state[name]
+	local state = original_state_get(name)
 	-- nothing else to do
-	if not saved_state then return end
+	if not state then return end
 
-	watcher:set_nametag_attributes({ color = saved_state.nametag.color, bgcolor = saved_state.nametag.bgcolor })
-	watcher:hud_set_flags(saved_state.hud_flags)
+	-- TODO: do we need to have backward compat code?
+	watcher:set_nametag_attributes({
+		color = state.nametag.color,
+		bgcolor = state.nametag.bgcolor
+	})
+	watcher:hud_set_flags(state.hud_flags)
 	watcher:set_properties({
-		visual_size = saved_state.visual_size,
+		visual_size = state.visual_size,
 		makes_footstep_sound = true,
-		collisionbox = saved_state.collisionbox,
+		collisionbox = state.collisionbox,
 	})
 
-	local privs = minetest.get_player_privs(name)
-	if not privs.interact and privs.watch then
-		privs.interact = true
-		minetest.set_player_privs(name, privs)
+	local privs = get_player_privs(name)
+	if privs.interact ~= state.priv_interact then
+		privs.interact = state.priv_interact
+		set_player_privs(name, privs)
 	end
 
-	local pos = saved_state.pos
+	local pos = state.pos
 	if pos then
 		-- set_pos seems to be very unreliable
 		-- this workaround helps though
-		minetest.after(0.1, function() watcher:set_pos(pos) end)
+		after(0.1, function() watcher:set_pos(pos) end)
 	end
-	original_state[name] = nil
+	original_state_delete(name)
 end
 
 
--- bothe players are online and all checks have been done when this
+-- both players are online and all checks have been done when this
 -- method is called
 local function attach(name_watcher, name_target)
 
 	-- detach from cart, horse, bike etc.
-	if player_api.player_attached[name_watcher] then
-		detach(name_watcher)
-	end
+	detach(name_watcher)
 
-	local watcher = minetest.get_player_by_name(name_watcher)
+	local watcher = get_player_by_name(name_watcher)
+	local privs_watcher = get_player_privs(name_watcher)
 	-- back up some attributes
 	local properties = watcher:get_properties()
-	original_state[name_watcher] = {
+	local state = {
 		collisionbox = table.copy(properties.collisionbox),
 		hud_flags = table.copy(watcher:hud_get_flags()),
 		nametag = table.copy(watcher:get_nametag_attributes()),
-		pos = vector.new(watcher:get_pos()),
+		pos = vector_new(watcher:get_pos()),
+		priv_interact = privs_watcher.interact,
 		target = name_target,
 		visual_size = table.copy(properties.visual_size),
 	}
+	original_state_set(watcher, state)
 
 	-- set some attributes
 	turn_off_hud_flags(watcher)
@@ -110,78 +169,112 @@ local function attach(name_watcher, name_target)
 		collisionbox = { 0 },
 	})
 	watcher:set_nametag_attributes({ color = { a = 0 }, bgcolor = { a = 0 } })
-	watcher:set_eye_offset(vector.new(0, -5, -20), vector.new())
+	watcher:set_eye_offset(vector_new(0, -5, -20), vector_new())
 	-- make sure watcher can't interact
-	local privs_watcher = minetest.get_player_privs(name_watcher)
 	privs_watcher.interact = nil
-	minetest.set_player_privs(name_watcher, privs_watcher)
+	set_player_privs(name_watcher, privs_watcher)
 	-- and attach
 	player_api.player_attached[name_watcher] = true
-	local target = minetest.get_player_by_name(name_target)
-	watcher:set_attach(target, "", vector.new(0, -5, -20), vector.new())
+	local target = get_player_by_name(name_target)
+	watcher:set_attach(target, '', vector_new(0, -5, -20), vector_new())
 end
 
 
 -- called by /watch command
 local function watch(name_watcher, name_target)
-	if name_watcher == name_target then return true, "You may not watch yourself." end
+	if name_watcher == name_target then return true, 'You may not watch yourself.' end
 
-	local target = minetest.get_player_by_name(name_target)
+	local target = get_player_by_name(name_target)
 	if not target then return true, 'Invalid target name "' .. name_target .. '"' end
 
 	-- avoid infinite loops
+	-- TODO: should we just watch the watched one then? Griefers can be a nuisance both ways.
 	if original_state[name_target] then return true, '"' .. name_target .. '" is watching "'
 		.. original_state[name_target].target .. '". You may not watch a watcher.' end
 
 	attach(name_watcher, name_target)
 	return true, 'Watching "' .. name_target .. '" at '
-		.. minetest.pos_to_string(vector.round(target:get_pos()))
+		.. minetest.pos_to_string(vector_round(target:get_pos()))
+end
+
+
+local function invite_timed_out(name_watcher)
+	-- did the watcher already accept/decline?
+	if not invites[name_watcher] then return end
+
+	chat(invites[name_watcher], 'Invitation to "' .. name_watcher .. '" timed-out."')
+	chat(name_watcher, 'Invitation from "' .. invites[name_watcher] .. '" timed-out."')
+	invites[name_watcher] = nil
 end
 
 
 -- TODO: allow inviting multiple players
 -- called by '/watchme' command
-local function watchme(name_target, name_watcher)
-	if name_watcher == name_target then return true, 'You may not watch yourself.' end
-
+local function watchme(name_target, param)
 	if original_state[name_target] then
-		return true, 'You are watching "' .. original_state[name_target].target .. '", no chain watching allowed.'
-	end
-	
-	if original_state[name_watcher] then
-		return true, '"' .. name_watcher .. '" is busy watching another player.'
+		return true, 'You are watching "' .. original_state[name_target].target
+			.. '", no chain watching is allowed.'
 	end
 
-	if invites[name_watcher] then return true, '"' .. name_watcher .. '" has a pending invite, try again later.' end
-
-	if not minetest.get_player_by_name(name_watcher) then return true, '"' .. name_watcher .. '" is not online.' end
-
-	if not sm.is_permited_to_invite(name_target, name_watcher) then
-		return true, 'You may not invite "' .. name_watcher .. '".'
+	if '' == param then
+		return true, 'Please provide at least one player name.'
 	end
-	
-	invites[name_watcher] = name_target
-	minetest.after(sm.watchme_timeout, invite_timed_out, name_watcher)
-	-- notify invited
-	chat(name_watcher, '"' .. name_target .. '" has invited you to observe them. Accept with /' .. 	sm.command_accept
-		.. ', deny with /' .. command_deny .. '.\n'
-		.. 'The invite expires in ' .. tostring(sm.watchme_timeout) .. ' seconds.')
+
+	local messages = {}
+	local invitation_timeout_string = tostring(sm.invitation_timeout)
+	local invitation_postfix = '" has invited you to observe them. '
+			.. 'Accept with /' .. 	sm.command_accept
+			.. ', deny with /' .. sm.command_deny .. '.\n'
+			.. 'The invite expires in ' .. invitation_timeout_string .. ' seconds.'
+	local function invite(name_watcher)
+		if name_watcher == name_target then return 'You may not watch yourself.' end
+
+		if original_state[name_watcher] then
+			return '"' .. name_watcher .. '" is busy watching another player.'
+		end
+
+		if invites[name_watcher] then
+			return '"' .. name_watcher .. '" has a pending invite, try again later.'
+		end
+
+		if not get_player_by_name(name_watcher) then
+			return '"' .. name_watcher .. '" is not online.'
+		end
+
+		if not sm.is_permited_to_invite(name_target, name_watcher) then
+			return 'You may not invite "' .. name_watcher .. '".'
+		end
+
+		invites[name_watcher] = name_target
+		after(sm.invitation_timeout, invite_timed_out, name_watcher)
+		-- notify invited
+		chat(name_watcher, '"' .. name_target .. invitation_postfix)
+
+		-- notify invitee
+		return 'You have invited "' .. name_watcher .. '".'
+	end
+
+	for name_watcher in string.gmatch(param, '[^%s,]+') do
+		table.insert(messages, invite(name_watcher))
+	end
 	-- notify invitee
-	return true, 'You have invited "' .. name_watcher .. '".\n'
-		.. 'The invite expires in ' .. tostring(sm.watchme_timeout) .. ' seconds.'
+	return true, table.concat(messages, '\n')
+			.. '\nThe invitations expire in ' .. invitation_timeout_string .. ' seconds.'
 end
 
 
 -- this function only checks privs etc. Mechanics are already checked in watchme()
 -- other mods can override and extend these checks
+-- luacheck: no unused args
 function spectator_mode.is_permited_to_invite(name_target, name_watcher)
-	if minetest.get_player_privs(name_target).watch then
+	if get_player_privs(name_target)[sm.priv_watch] then
 		return true
 	end
 
 	-- TODO: check chat and tpr mute if the mods are active
 	return false
 end
+-- luacheck: unused args
 
 
 -- called by the accept command '/smy'
@@ -213,7 +306,7 @@ end
 minetest.register_chatcommand("watch", {
 	params = "<target name>",
 	description = "Watch a given player",
-	privs = { watch = true },
+	privs = { [sm.priv_watch] = true },
 	func = watch,
 })
 
@@ -221,15 +314,15 @@ minetest.register_chatcommand("watch", {
 minetest.register_chatcommand(sm.command_detach, {
 	description = "Unwatch a player",
 	privs = { },
-	--luacheck: no unused args
-	func = function(name, param) detach(name) end
+	-- luacheck: no unused args
+	func = function(name_watcher, param) detach(name_watcher) end
 })
 
 
 minetest.register_chatcommand(sm.command_invite, {
 	description = 'Invite a player to watch you',
 	params = '<player name>',
-	privs = { },
+	privs = { [sm.priv_invite] = true },
 	func = watchme,
 })
 
@@ -250,7 +343,43 @@ minetest.register_chatcommand(sm.command_deny, {
 })
 
 
-minetest.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	detach(name)
+minetest.register_on_joinplayer(function(watcher)
+	local state = minetest.deserialize(
+		watcher:get_meta():get_string('spectator_mode_state'))
+
+	if not state then return end
+
+	-- server must have crashed while this player was attached
+	local name_watcher = watcher:get_player_name()
+	original_state[name_watcher] = state
+	if not get_player_by_name(state.target) then
+		-- other player has not joined yet
+		detach(name_watcher)
+	end
 end)
+
+
+minetest.register_on_leaveplayer(function(watcher)
+	local name_watcher = watcher:get_player_name()
+	if invites[name_watcher] then
+		-- invitation exists for leaving player
+		chat(invites[name_watcher], 'Invitation to "' .. name_watcher
+			.. '" invalidated because of logout."')
+		invites[name_watcher] = nil
+	end
+	-- detach before leaving
+	detach(name_watcher)
+	-- detach any that are watching this user
+	local attached = {}
+	for name, state in pairs(original_state) do
+		if name_watcher == state.target then
+			table.insert(attached, name)
+		end
+	end
+	-- we use separate loop to avoid editing a
+	-- hash while it's being looped
+	for _, name in ipairs(attached) do
+		detach(name)
+	end
+end)
+
