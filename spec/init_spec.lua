@@ -4,6 +4,9 @@ mineunit("core")
 mineunit("player")
 mineunit("server")
 
+-- mimic player_api.player_attached
+player_api = { player_attached = {} }
+
 describe("Mod initialization", function()
 
 	it("Wont crash", function()
