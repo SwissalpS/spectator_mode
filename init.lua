@@ -20,7 +20,7 @@ end
 local function detach(name)
 	-- nothing to do
 	if not default.player_attached[name] then return end
-	
+
 	local watcher = minetest.get_player_by_name(name)
 	if not watcher then return end -- shouldn't ever happen
 
@@ -82,7 +82,7 @@ minetest.register_chatcommand("watch", {
 			hud_flags = table.copy(watcher:hud_get_flags()),
 			nametag = table.copy(watcher:get_nametag_attributes()),
 			pos = vector.new(watcher:get_pos()),
-			target = target_name,
+			target = name_target,
 			visual_size = table.copy(properties.visual_size),
 		}
 
