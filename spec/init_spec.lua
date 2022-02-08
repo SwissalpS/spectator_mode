@@ -36,12 +36,13 @@ describe("Chatting", function()
 			mineunit:execute_on_leaveplayer(player)
 		end
 	end)
---[[
-	it("sends messages", function()
+
+	it("boss attaches to dude1", function()
 		spy.on(minetest, "chat_send_player")
-		SX:send_chat_message("Everyone ignore me, this is just a test")
+		boss:send_chat_message("/watch dude1")
 		assert.spy(minetest.chat_send_player).was.called()
 	end)
+--[[
 
 	it("creates channel", function()
 		SX:send_chat_message("/cc foo")
