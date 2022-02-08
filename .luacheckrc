@@ -1,12 +1,16 @@
-unused_args = false
-allow_defined_top = true
-
-read_globals = {
-	"minetest",
-	"vector",
-}
+--unused_args = false
+--allow_defined_top = true
 
 globals = {
-	"default",
-	"player_api",
+	player_api = { fields = { "player_attached" } },
+}
+
+read_globals = {
+	-- Stdlib
+	table = { fields = { "copy" } },
+
+	-- Minetest
+	"minetest",
+	"vector",
+
 }
