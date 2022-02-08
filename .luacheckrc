@@ -1,6 +1,7 @@
 
 globals = {
 	player_api = { fields = { "player_attached" } },
+	"spectator_mode",
 }
 
 read_globals = {
