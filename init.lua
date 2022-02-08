@@ -93,7 +93,7 @@ minetest.register_chatcommand("watch", {
 			makes_footstep_sound = false,
 			collisionbox = { 0 },
 		})
-		watcher:set_nametag_attributes({ color = { a = 0 }, bgcolor = { a = 0 })
+		watcher:set_nametag_attributes({ color = { a = 0 }, bgcolor = { a = 0 } })
 		watcher:set_eye_offset(vector.new(0, -5, -20), vector.new())
 		-- make sure watcher can't interact
 		local privs_watcher = minetest.get_player_privs(name_watcher)
