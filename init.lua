@@ -19,7 +19,7 @@ end
 
 local function detach(name)
 	-- nothing to do
-	if not default.player_attached[name] then return end
+	if not player_api.player_attached[name] then return end
 
 	local watcher = minetest.get_player_by_name(name)
 	if not watcher then return end -- shouldn't ever happen
