@@ -5,7 +5,7 @@ globals = {
 
 read_globals = {
 	-- Stdlib
-	table = { fields = { "copy" } },
+	table = { fields = { "copy", "insert" } },
 
 	-- Minetest
 	"minetest",
