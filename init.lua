@@ -112,6 +112,7 @@ minetest.register_chatcommand("watch", {
 minetest.register_chatcommand("unwatch", {
 	description = "Unwatch a player",
 	privs = {watch=true},
+	--luacheck: no unused args
 	func = function(name, param)
 		detach(name)
 	end
