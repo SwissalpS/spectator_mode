@@ -5,7 +5,7 @@ mineunit("player")
 mineunit("server")
 
 -- mimic player_api.player_attached
-player_api = { player_attached = {} }
+fixture('player_api')
 
 describe("Mod initialization", function()
 
