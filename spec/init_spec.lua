@@ -24,7 +24,7 @@ function Player:get_nametag_attributes()
 		bgcolor = self._nametag_bgcolor or { a = 0, r = 0, g = 0, b = 0 },
 	}
 	end
-	return self._nametage_attributes
+	return self._nametag_attributes
 end
 --function ObjectRef:set_nametag_attributes(new_attributes)
 function Player:set_nametag_attributes(new_attributes)
