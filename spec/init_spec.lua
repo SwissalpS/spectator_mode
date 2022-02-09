@@ -22,7 +22,7 @@ end
 
 function ObjectRef:get_nametag_attributes()
 	if not self._nametag_attributes then self._nametag_attributes = {
-		name = self._name or '',
+		text = self._nametag_text or '',
 		color = self._nametag_color or { a = 255, r = 255, g = 255, b = 255 },
 		bgcolor = self._nametag_bgcolor or { a = 0, r = 0, g = 0, b = 0 },
 	}
