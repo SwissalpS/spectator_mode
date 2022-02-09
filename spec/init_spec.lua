@@ -16,8 +16,7 @@ function Player:hud_set_flags(new_flags)
 	for flag, value in pairs(new_flags) do if nil ~= self._hud_flags[flag] then self._hud_flags[flag] = not not value end end
 end
 
---function ObjectRef:get_nametag_attributes()
-function Player:get_nametag_attributes()
+function ObjectRef:get_nametag_attributes()
 	if not self._nametag_attributes then self._nametag_attributes = {
 		name = self._name or '',
 		color = self._nametag_color or { a = 255, r = 255, g = 255, b = 255 },
@@ -26,8 +25,8 @@ function Player:get_nametag_attributes()
 	end
 	return self._nametag_attributes
 end
---function ObjectRef:set_nametag_attributes(new_attributes)
-function Player:set_nametag_attributes(new_attributes)
+
+function ObjectRef:set_nametag_attributes(new_attributes)
 	if not self._nametag_attributes then self:get_nametag_attributes() end
 	for key, value in pairs(new_attributes) do
 		if nil ~= self._nametag_attributes[key] then
