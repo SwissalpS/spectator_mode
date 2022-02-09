@@ -32,23 +32,24 @@ local original_state = {}
 local invites = {}
 
 
--- TODO: maybe we need to run this after all mods have loaded?
-if not minetest.registered_privileges[sm.priv_watch] then
-	minetest.register_privilege(sm.priv_watch, {
-		description = 'Player can watch other players.',
-		give_to_singleplayer = false,
-		give_to_admin = true,
-	})
-end
+-- register privs after all mods have loaded as user may want to reuse other privs
+minetest.register_on_mods_loaded(function()
+	if not minetest.registered_privileges[sm.priv_watch] then
+		minetest.register_privilege(sm.priv_watch, {
+			description = 'Player can watch other players.',
+			give_to_singleplayer = false,
+			give_to_admin = true,
+		})
+	end
 
-if not minetest.registered_privileges[sm.priv_invite] then
-	minetest.register_privilege(sm.priv_invite, {
-		description = 'Player can invite other players to watch them.',
-		give_to_singleplayer = false,
-		give_to_admin = true,
-	})
-end
-
+	if not minetest.registered_privileges[sm.priv_invite] then
+		minetest.register_privilege(sm.priv_invite, {
+			description = 'Player can invite other players to watch them.',
+			give_to_singleplayer = false,
+			give_to_admin = true,
+		})
+	end
+end)
 
 -- TODO: consider making this public
 local function original_state_get(player)
