@@ -19,6 +19,7 @@ local serialize = minetest.serialize
 local get_player_privs = minetest.get_player_privs
 local set_player_privs = minetest.set_player_privs
 local get_player_by_name = minetest.get_player_by_name
+local vector_copy = vector.copy
 local vector_new = vector.new
 local vector_round = vector.round
 
@@ -104,7 +105,7 @@ local function detach(name)
 
 	watcher:set_detach()
 	player_api.player_attached[name] = false
-	watcher:set_eye_offset(vector_new(), vector_new())
+	watcher:set_eye_offset()
 
 	local state = original_state_get(name)
 	-- nothing else to do
@@ -153,7 +154,7 @@ local function attach(name_watcher, name_target)
 		collisionbox = table.copy(properties.collisionbox),
 		hud_flags = table.copy(watcher:hud_get_flags()),
 		nametag = table.copy(watcher:get_nametag_attributes()),
-		pos = vector_new(watcher:get_pos()),
+		pos = vector_copy(watcher:get_pos()),
 		priv_interact = privs_watcher.interact,
 		target = name_target,
 		visual_size = table.copy(properties.visual_size),
@@ -165,17 +166,18 @@ local function attach(name_watcher, name_target)
 	watcher:set_properties({
 		visual_size = { x = 0, y = 0 },
 		makes_footstep_sound = false,
-		collisionbox = { 0 },
+		collisionbox = { 0 }, -- TODO: is this the proper/best way?
 	})
 	watcher:set_nametag_attributes({ color = { a = 0 }, bgcolor = { a = 0 } })
-	watcher:set_eye_offset(vector_new(0, -5, -20), vector_new())
+	local eye_pos = vector_new(0, -5, -20)
+	watcher:set_eye_offset(eye_pos)
 	-- make sure watcher can't interact
 	privs_watcher.interact = nil
 	set_player_privs(name_watcher, privs_watcher)
 	-- and attach
 	player_api.player_attached[name_watcher] = true
 	local target = get_player_by_name(name_target)
-	watcher:set_attach(target, '', vector_new(0, -5, -20), vector_new())
+	watcher:set_attach(target, '', eye_pos)
 end
 
 
