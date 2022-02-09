@@ -15,6 +15,37 @@ function Player:hud_set_flags(new_flags)
 	if not self._hud_flags then self._hud_flags = self:hud_get_flags() end
 	for flag, value in pairs(new_flags) do if nil ~= self._hud_flags[flag] then self._hud_flags[flag] = not not value end end
 end
+
+--function ObjectRef:get_nametag_attributes()
+function Player:get_nametag_attributes()
+	if not self._nametag_attributes then self._nametag_attributes = {
+		name = self._name or '',
+		color = self._nametag_color or { a = 255, r = 255, g = 255, b = 255 },
+		bgcolor = self._nametag_bgcolor or { a = 0, r = 0, g = 0, b = 0 },
+	}
+	end
+	return self._nametage_attributes
+end
+--function ObjectRef:set_nametag_attributes(new_attributes)
+function Player:set_nametag_attributes(new_attributes)
+	if not self._nametag_attributes then self:get_nametag_attributes() end
+	for key, value in pairs(new_attributes) do
+		if nil ~= self._nametag_attributes[key] then
+			if 'name' == key then
+				self._nametag_attributes.name = tostring(value)
+			else
+				for subkey, subvalue in pairs(new_attributes[key]) do
+					if nil ~= self._nametag_attributes[key][subkey] then
+						self._nametag_attributes[key][subkey] = tonumber(subvalue)
+					end
+				end
+			end
+		end
+	end
+end
+
+
+
 describe("Mod initialization", function()
 
 	it("Wont crash", function()
