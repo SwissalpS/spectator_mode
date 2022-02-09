@@ -76,7 +76,7 @@ end
 local function original_state_delete(player)
 	if not player or not player:is_player() then return end
 	-- remove from cache
-	original_state[player:get_player_name()] =
+	original_state[player:get_player_name()] = nil
 	-- remove backup
 	player:get_meta():set_string('spectator_mode_state', '')
 end
