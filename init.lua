@@ -203,8 +203,8 @@ local function invite_timed_out(name_watcher)
 	-- did the watcher already accept/decline?
 	if not invites[name_watcher] then return end
 
-	chat(invites[name_watcher], 'Invitation to "' .. name_watcher .. '" timed-out."')
-	chat(name_watcher, 'Invitation from "' .. invites[name_watcher] .. '" timed-out."')
+	chat(invites[name_watcher], 'Invitation to "' .. name_watcher .. '" timed-out.')
+	chat(name_watcher, 'Invitation from "' .. invites[name_watcher] .. '" timed-out.')
 	invites[name_watcher] = nil
 end
 
@@ -298,22 +298,22 @@ local function decline_invite(name_watcher)
 		return true, 'There is no invite for you. Maybe it timed-out.'
 	end
 
-	chat(invites[name_watcher], '"' .. name_watcher .. '" declined the invite."')
+	chat(invites[name_watcher], '"' .. name_watcher .. '" declined the invite.')
 	invites[name_watcher] = nil
 	return true, 'OK, declined invite.'
 end
 
 
-	params = "<target name>",
-	description = "Watch a given player",
 minetest.register_chatcommand(sm.command_attach, {
+	params = '<target name>',
+	description = 'Watch a given player',
 	privs = { [sm.priv_watch] = true },
 	func = watch,
 })
 
 
 minetest.register_chatcommand(sm.command_detach, {
-	description = "Unwatch a player",
+	description = 'Unwatch a player',
 	privs = { },
 	-- luacheck: no unused args
 	func = function(name_watcher, param) detach(name_watcher) end
@@ -365,7 +365,7 @@ minetest.register_on_leaveplayer(function(watcher)
 	if invites[name_watcher] then
 		-- invitation exists for leaving player
 		chat(invites[name_watcher], 'Invitation to "' .. name_watcher
-			.. '" invalidated because of logout."')
+			.. '" invalidated because of logout.')
 		invites[name_watcher] = nil
 	end
 	-- detach before leaving
