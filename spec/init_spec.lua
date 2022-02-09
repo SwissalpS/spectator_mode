@@ -26,6 +26,17 @@ function ObjectRef:get_nametag_attributes()
 	return self._nametag_attributes
 end
 
+function Player:set_eye_offset(firstperson, thirdperson)
+	self._eye_offset_first =
+		firstperson and vector.copy(firstperson) or vector.zero()
+
+	thirdperson = thirdperson and vector.copy(thirdperson) or vector.zero()
+	thirdperson.x = math.max(-10, math.min(10, thirdperson.x))
+	thirdperson.y = math.max(-10, math.min(15, thirdperson.y))
+	thirdperson.z = math.max(-5, math.min(5, thirdperson.z))
+	self._eye_offset_third = thirdperson
+end
+
 function ObjectRef:set_nametag_attributes(new_attributes)
 	if not self._nametag_attributes then self:get_nametag_attributes() end
 	for key, value in pairs(new_attributes) do
