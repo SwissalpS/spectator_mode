@@ -6,6 +6,7 @@ spectator_mode = {
 	command_deny = minetest.settings:get('spectator_mode.command_deny') or 'smn',
 	command_detach = minetest.settings:get('spectator_mode.command_detach') or 'unwatch',
 	command_invite = minetest.settings:get('spectator_mode.command_invite') or 'watchme',
+	command_attach = minetest.settings:get('spectator_mode.command_attach') or 'watch',
 	invitation_timeout = tonumber(minetest.settings:get('spectator_mode.invitation_timeout') or 1 * 60),
 	priv_invite = minetest.settings:get('spectator_mode.priv_invite') or 'interact',
 	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
@@ -301,9 +302,9 @@ local function decline_invite(name_watcher)
 end
 
 
-minetest.register_chatcommand("watch", {
 	params = "<target name>",
 	description = "Watch a given player",
+minetest.register_chatcommand(sm.command_attach, {
 	privs = { [sm.priv_watch] = true },
 	func = watch,
 })

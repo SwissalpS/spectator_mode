@@ -6,6 +6,8 @@ spectator_mode.command_deny (Chatcommand to deny an invitation) string smn
 spectator_mode.command_detach (Chatcommand to stop observing a player) string unwatch
 # To invite another player to observe player that issued this command
 spectator_mode.command_invite (Chatcommand to invite other player) string watchme
+# To start observing another player, issue this command
+spectator_mode.command_attach (Chatcommand to start observing a player) string watch
 # Invitations invalidate after this many seconds if they haven't been accepted or denied
 spectator_mode.invitation_timeout (Duration invites are valid for in seconds) int 60
 # The priv needed to send observation invites.
