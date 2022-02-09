@@ -58,6 +58,54 @@ function ObjectRef:set_nametag_attributes(new_attributes)
 	end
 end
 
+function ObjectRef:set_attach(parent, bone, position, rotation, forced_visible)
+	if not parent then return end
+	if self._attach and self._attach.parent == parent then
+		mineunit:info('Attempt to attach to parent that object is already attached to.')
+		return
+	end
+	-- detach if attached
+	self:set_detach()
+	local obj = parent
+	while true do
+		if not obj._attach then break end
+		if obj._attach.parent == self then
+			mineunit:warning('Mod bug: Attempted to attach object to an object that '
+				.. 'is directly or indirectly attached to the first object. -> '
+				.. 'circular attachment chain.')
+			return
+		end
+		obj = obj._attach.parent
+	end
+	mineunit:info(parent._children)
+	if 'table' ~= type(parent._children) then parent._children = {} end
+	mineunit:info(parent._children)
+	table.insert(parent._children, self)
+	self._attach = {
+		parent = parent,
+		bone = bone or '',
+		position = position or vector.zero(),
+		rotation = rotation or vector.zero(),
+		forced_visible = not not forced_visible,
+	}
+	self:set_pos(vector.add(parent:get_pos(), self._attach.position))
+	-- TODO: apply rotation
+end
+function ObjectRef:get_attach()
+	return self._attach
+end
+function ObjectRef:get_children()
+	return self._children or {}
+end
+function ObjectRef:set_detach()
+	if not self._attach then return end
+	local new_children = {}
+	for _, child in ipairs(self._attach.parent._children) do
+		if child ~= self then table.insert(new_children, child) end
+	end
+	self._attach.parent._children = new_children
+	self._attach = nil
+end
 
 describe("Mod initialization", function()
 
