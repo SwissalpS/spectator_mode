@@ -88,8 +88,11 @@ function ObjectRef:set_attach(parent, bone, position, rotation, forced_visible)
 		rotation = rotation or vector.zero(),
 		forced_visible = not not forced_visible,
 	}
+	self._pitch = self._attach.position.x
+	self._roll = self._attach.position.z
+	self._yaw = self._attach.position.y
 	self:set_pos(vector.add(parent:get_pos(), self._attach.position))
-	-- TODO: apply rotation
+	-- TODO: bones depending on object type
 end
 function ObjectRef:get_attach()
 	return self._attach
