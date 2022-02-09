@@ -15,7 +15,7 @@ describe("Mod initialization", function()
 
 end)
 
-describe("Chatting", function()
+describe("Watching", function()
 
 	local players = {
 		SX = Player("SX", { interact = 1 }),
