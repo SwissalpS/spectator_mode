@@ -7,6 +7,10 @@ mineunit("server")
 -- mimic player_api.player_attached
 fixture('player_api')
 
+function vector.copy(v) return { x = v.x or 0, y = v.y or 0, z = v.z or 0 } end
+
+function vector.zero() return { x = 0, y = 0, z = 0 } end
+
 function Player:hud_get_flags()
 	return self._hud_flags or { hotbar = true, healthbar = true, crosshair = true,
 		wielditem = true, breathbar = true, minimap = false, minimap_radar = false }
@@ -53,7 +57,6 @@ function ObjectRef:set_nametag_attributes(new_attributes)
 		end
 	end
 end
-
 
 
 describe("Mod initialization", function()
