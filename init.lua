@@ -275,7 +275,12 @@ function spectator_mode.is_permited_to_invite(name_target, name_watcher)
 		return true
 	end
 
-	-- TODO: check chat and tpr mute if the mods are active
+	-- check for beerchat mute/ignore
+	local meta = get_player_by_name(name_watcher):get_meta()
+	if 'true' == meta:get_string('beerchat:muted:' .. name_target) then
+		return false
+	end
+
 	return false
 end
 -- luacheck: unused args
