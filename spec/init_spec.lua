@@ -7,6 +7,14 @@ mineunit("server")
 -- mimic player_api.player_attached
 fixture('player_api')
 
+function Player:hud_get_flags()
+	return self._hud_flags or { hotbar = true, healthbar = true, crosshair = true,
+		wielditem = true, breathbar = true, minimap = false, minimap_radar = false }
+end
+function Player:hud_set_flags(new_flags)
+	if not self._hud_flags then self._hud_flags = self:hud_get_flags() end
+	for flag, value in pairs(new_flags) do if nil ~= self._hud_flags[flag] then self._hud_flags[flag] = not not value end end
+end
 describe("Mod initialization", function()
 
 	it("Wont crash", function()
