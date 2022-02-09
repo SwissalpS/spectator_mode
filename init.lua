@@ -1,8 +1,5 @@
 -- NOTE: in the output texts, the names are always in double quotes because some players have
 --	names that can be confusing without the quotes.
--- WARNING: currently the states are only stored in runtime memory. If server crashes, some
---	players may be in weird states on relog!
-
 spectator_mode = {
 	version = 20220208,
 	command_accept = 'smy', -- TODO: fetch these from settings
