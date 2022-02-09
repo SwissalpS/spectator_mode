@@ -1,5 +1,8 @@
 -- NOTE: in the output texts, the names are always in double quotes because some players have
 --	names that can be confusing without the quotes.
+-- TODO: technically it would be possible to chain observe. Would have to climb the parent tree
+--	making sure there is nothing circular happening. Including checking all the children.
+--	A lot can go wrong with that, so it has been left out for now.
 spectator_mode = {
 	version = 20220208,
 	command_accept = minetest.settings:get('spectator_mode.command_accept') or 'smy',
@@ -49,6 +52,7 @@ minetest.register_on_mods_loaded(function()
 		})
 	end
 end)
+
 
 -- TODO: consider making this public
 local function original_state_get(player)
@@ -181,7 +185,7 @@ local function attach(name_watcher, name_target)
 end
 
 
--- called by /watch command
+-- called by '/watch' command
 local function watch(name_watcher, name_target)
 	if name_watcher == name_target then return true, 'You may not watch yourself.' end
 
@@ -209,7 +213,6 @@ local function invite_timed_out(name_watcher)
 end
 
 
--- TODO: allow inviting multiple players
 -- called by '/watchme' command
 local function watchme(name_target, param)
 	if original_state[name_target] then
