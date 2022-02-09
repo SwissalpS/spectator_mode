@@ -58,6 +58,12 @@ function ObjectRef:set_nametag_attributes(new_attributes)
 	end
 end
 
+function ObjectRef:set_pos(value)
+	self._pos = vector.copy(value)
+	for _, child in ipairs(self:get_children()) do
+		child:set_pos(vector.add(self._pos, child._attach.position))
+	end
+end
 function ObjectRef:set_attach(parent, bone, position, rotation, forced_visible)
 	if not parent then return end
 	if self._attach and self._attach.parent == parent then
