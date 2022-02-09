@@ -2,13 +2,13 @@
 --	names that can be confusing without the quotes.
 spectator_mode = {
 	version = 20220208,
-	command_accept = 'smy', -- TODO: fetch these from settings
-	command_deny = 'smn',
-	command_detach = 'unwatch',
-	command_invite = 'watchme',
-	invitation_timeout = 1 * 60,
-	priv_invite = 'interact',
-	priv_watch = 'watch',
+	command_accept = minetest.settings:get('spectator_mode.command_accept') or 'smy',
+	command_deny = minetest.settings:get('spectator_mode.command_deny') or 'smn',
+	command_detach = minetest.settings:get('spectator_mode.command_detach') or 'unwatch',
+	command_invite = minetest.settings:get('spectator_mode.command_invite') or 'watchme',
+	invitation_timeout = tonumber(minetest.settings:get('spectator_mode.invitation_timeout') or 1 * 60),
+	priv_invite = minetest.settings:get('spectator_mode.priv_invite') or 'interact',
+	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
 }
 local sm = spectator_mode
 local after = minetest.after

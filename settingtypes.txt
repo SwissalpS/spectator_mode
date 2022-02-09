@@ -1,0 +1,15 @@
+# After an invite has successfully been sent, the watcher needs to accept with this command.
+spectator_mode.command_accept (Chatcommand to accept an invitation) string smy
+# After an invite has successfully been sent, the watcher may decline it with this command.
+spectator_mode.command_deny (Chatcommand to deny an invitation) string smn
+# To stop observing another player, issue this command
+spectator_mode.command_detach (Chatcommand to stop observing a player) string unwatch
+# To invite another player to observe player that issued this command
+spectator_mode.command_invite (Chatcommand to invite other player) string watchme
+# Invitations invalidate after this many seconds if they haven't been accepted or denied
+spectator_mode.invitation_timeout (Duration invites are valid for in seconds) int 60
+# The priv needed to send observation invites.
+spectator_mode.priv_invite (Player priv to invite others to observe) string interact
+# The priv needed to silently observe any player that isn't currently watching another one
+spectator_mode.priv_watch (Moderator priv to watch any player) string watch
+
