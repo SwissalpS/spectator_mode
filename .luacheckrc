@@ -14,5 +14,5 @@ read_globals = {
 
 	-- Minetest
 	"minetest",
-	vector = { fields = { "new", "round" } },
+	vector = { fields = { "copy", "new", "round" } },
 }
