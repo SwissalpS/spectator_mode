@@ -1,4 +1,7 @@
 # Spectator Mode
+[![luacheck](https://github.com/SwissalpS/spectator_mode/workflows/luacheck/badge.svg)](https://github.com/SwissalpS/spectator_mode/actions)
+[![License](https://img.shields.io/badge/License-LGPLv3%20and%20CC%20BY--SA%203.0-green.svg)](LICENSE)
+[![Minetest](https://img.shields.io/badge/Minetest-5.0+-blue.svg)](https://www.minetest.net)
 
 A mod for Minetest allowing you to watch other players in their 3rd person view.
 You're invisible and undetectable for the players when you're in this mode.
