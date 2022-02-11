@@ -296,7 +296,8 @@ local function accept_invite(name_watcher)
 	attach(name_watcher, name_target)
 	invites[name_watcher] = nil
 	chat(name_target, '"' .. name_watcher .. '" is now attached to you.')
-	return true, 'OK, you have been attached to "' .. name_target .. '". To disable type /unwatch'
+	return true, 'OK, you have been attached to "' .. name_target .. '". To disable type /'
+		.. sm.command_detach
 end
 
 
