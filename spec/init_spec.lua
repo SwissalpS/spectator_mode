@@ -26,10 +26,16 @@ describe("Watching", function()
 		dude2 = Player("dude2", { interact = 1, }),
 		dude3 = Player("dude3", { interact = false, }),
 	}
+	local start_positions = {}
 
 	setup(function()
-		for _, player in pairs(players) do
+		local i, pos = 1
+		for name, player in pairs(players) do
 			mineunit:execute_on_joinplayer(player)
+			pos = vector.new(10 * i, 20 * i, 30 * i)
+			start_positions[name] = pos
+			player:set_pos(pos)
+			i = i + 1
 		end
 	end)
 
@@ -43,6 +49,12 @@ describe("Watching", function()
 		spy.on(minetest, "chat_send_player")
 		players.boss:send_chat_message("/watch dude1")
 		assert.spy(minetest.chat_send_player).was.called()
+		local pos = players.boss:get_pos()
+		assert.equals(start_positions.dude1.x, pos.x)
+		assert.equals(start_positions.dude1.y - 5, pos.y)
+		assert.equals(start_positions.dude1.z - 20, pos.z)
+	end)
+
 	end)
 --[[
 
