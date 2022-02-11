@@ -55,6 +55,17 @@ describe("Watching", function()
 		assert.equals(start_positions.dude1.z - 20, pos.z)
 	end)
 
+	it('invitations expire', function()
+		spy.on(minetest, "chat_send_player")
+		players.dude2:send_chat_message('/watchme dude1 SX')
+		assert.spy(minetest.chat_send_player).was.called()
+		mineunit:execute_globalstep(62)
+		mineunit:execute_globalstep(62)
+		players.SX:send_chat_message('/smy')
+		local pos = players.SX:get_pos()
+		assert.equals(start_positions.SX.x, pos.x)
+		assert.equals(start_positions.SX.y, pos.y)
+		assert.equals(start_positions.SX.z, pos.z)
 	end)
 --[[
 
