@@ -28,7 +28,6 @@ local serialize = minetest.serialize
 local get_player_privs = minetest.get_player_privs
 local set_player_privs = minetest.set_player_privs
 local get_player_by_name = minetest.get_player_by_name
-local vector_copy = vector.copy
 local vector_new = vector.new
 local vector_round = vector.round
 
@@ -178,14 +177,14 @@ local function attach(name_watcher, name_target)
 	-- back up some attributes
 	local properties = watcher:get_properties()
 	local state = {
-		collisionbox = table.copy(properties.collisionbox),
-		hud_flags = table.copy(watcher:hud_get_flags()),
+		collisionbox = properties.collisionbox,
+		hud_flags = watcher:hud_get_flags(),
 		makes_footstep_sound = properties.makes_footstep_sound,
-		nametag = table.copy(watcher:get_nametag_attributes()),
-		pos = vector_copy(watcher:get_pos()),
+		nametag = watcher:get_nametag_attributes(),
+		pos = watcher:get_pos(),
 		priv_interact = privs_watcher.interact,
 		target = name_target,
-		visual_size = table.copy(properties.visual_size),
+		visual_size = properties.visual_size,
 	}
 	original_state_set(watcher, state)
 
