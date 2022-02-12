@@ -303,7 +303,6 @@ end -- watchme
 
 -- this function only checks privs etc. Mechanics are already checked in watchme()
 -- other mods can override and extend these checks
--- luacheck: no unused args
 function spectator_mode.is_permited_to_invite(name_target, name_watcher)
 	if get_player_privs(name_target)[sm.priv_watch] then
 		return true
@@ -321,7 +320,6 @@ function spectator_mode.is_permited_to_invite(name_target, name_watcher)
 
 	return true
 end -- is_permited_to_invite
--- luacheck: unused args
 
 
 -- called by the accept command '/smy'
