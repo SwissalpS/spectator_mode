@@ -351,6 +351,45 @@ local function decline_invite(name_watcher)
 end -- decline_invite
 
 
+local function on_joinplayer(watcher)
+	local state = original_state_get(watcher)
+	if not state then return end
+
+	-- attempt to move to original state after log-off
+	-- during attach or server crash
+	local name_watcher = watcher:get_player_name()
+	original_state[name_watcher] = state
+	player_api.player_attached[name_watcher] = true
+	detach(name_watcher)
+end -- on_joinplayer
+
+
+local function on_leaveplayer(watcher)
+	local name_watcher = watcher:get_player_name()
+	if invites[name_watcher] then
+		-- invitation exists for leaving player
+		chat(invites[name_watcher], 'Invitation to "' .. name_watcher
+			.. '" invalidated because of logout.')
+
+		invites[name_watcher] = nil
+	end
+	-- detach before leaving
+	detach(name_watcher)
+	-- detach any that are watching this user
+	local attached = {}
+	for name, state in pairs(original_state) do
+		if name_watcher == state.target then
+			table.insert(attached, name)
+		end
+	end
+	-- we use separate loop to avoid editing a
+	-- hash while it's being looped
+	for _, name in ipairs(attached) do
+		detach(name)
+	end
+end -- on_leaveplayer
+
+
 minetest.register_chatcommand(sm.command_attach, {
 	params = '<target name>',
 	description = 'Watch a given player',
@@ -363,7 +402,7 @@ minetest.register_chatcommand(sm.command_detach, {
 	description = 'Unwatch a player',
 	privs = { },
 	-- luacheck: no unused args
-	func = function(name_watcher, param) detach(name_watcher) end
+	func = detach,
 })
 
 
@@ -391,43 +430,6 @@ minetest.register_chatcommand(sm.command_deny, {
 })
 
 
-minetest.register_on_joinplayer(function(watcher)
-	local state = minetest.deserialize(
-		watcher:get_meta():get_string('spectator_mode_state'))
-
-	if not state then return end
-
-	-- server must have crashed while this player was attached
-	local name_watcher = watcher:get_player_name()
-	original_state[name_watcher] = state
-	if not get_player_by_name(state.target) then
-		-- other player has not joined yet
-		detach(name_watcher)
-	end
-end)
-
-
-minetest.register_on_leaveplayer(function(watcher)
-	local name_watcher = watcher:get_player_name()
-	if invites[name_watcher] then
-		-- invitation exists for leaving player
-		chat(invites[name_watcher], 'Invitation to "' .. name_watcher
-			.. '" invalidated because of logout.')
-		invites[name_watcher] = nil
-	end
-	-- detach before leaving
-	detach(name_watcher)
-	-- detach any that are watching this user
-	local attached = {}
-	for name, state in pairs(original_state) do
-		if name_watcher == state.target then
-			table.insert(attached, name)
-		end
-	end
-	-- we use separate loop to avoid editing a
-	-- hash while it's being looped
-	for _, name in ipairs(attached) do
-		detach(name)
-	end
-end)
+minetest.register_on_joinplayer(on_joinplayer)
+minetest.register_on_leaveplayer(on_leaveplayer)
 
