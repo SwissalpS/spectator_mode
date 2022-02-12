@@ -142,6 +142,9 @@ local function detach(name_watcher)
 	-- this workaround helps though
 	after(0.1, function()
 		watcher:set_pos(state.pos)
+		-- delete state only after actually moved.
+		-- this helps re-attach after log-off/server crash
+		original_state_delete(watcher)
 	end)
 
 	-- if watcher was invited, notify invitee that watcher has detached
@@ -149,8 +152,8 @@ local function detach(name_watcher)
 		invited[name_watcher] = nil
 		chat(state.target, '"' .. name_watcher
 			.. '" has stopped looking over your shoulder.')
+
 	end
-	original_state_delete(name)
 	core_log('action', '[spectator_mode] "' .. name_watcher
 		.. '" detached from "' .. state.target .. '"')
 
