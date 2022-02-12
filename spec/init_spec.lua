@@ -11,6 +11,16 @@ fixture('mineunit_extensions')
 
 local function pd1(m) print(dump(m)) end
 local function pd(...) for _, m in ipairs({...}) do pd1(m) end end
+
+-- override chat_send_player to inspect what was sent
+local chatlog = {}
+local core_chat_send_player = core.chat_send_player
+function core.chat_send_player(to_name, message)
+	table.insert(chatlog, { to = to_name, message = message })
+	return core_chat_send_player(to_name, message)
+end
+local function reset_chatlog() chatlog = {} end
+
 describe("Mod initialization", function()
 
 	it("Wont crash", function()
