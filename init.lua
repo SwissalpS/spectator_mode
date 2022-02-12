@@ -138,11 +138,11 @@ local function detach(name_watcher)
 		set_player_privs(name_watcher, privs)
 	end
 
-	local pos = state.pos
-	if pos then
-		-- set_pos seems to be very unreliable
-		-- this workaround helps though
-		after(0.1, function() watcher:set_pos(pos) end)
+	-- set_pos seems to be very unreliable
+	-- this workaround helps though
+	after(0.1, function()
+		watcher:set_pos(state.pos)
+	end)
 
 	-- if watcher was invited, notify invitee that watcher has detached
 	if invited[name_watcher] then
