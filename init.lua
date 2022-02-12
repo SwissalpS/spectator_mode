@@ -32,6 +32,10 @@ local original_state = {}
 -- hash-table of pending invites
 -- invites['invited_player'] = 'inviting_player'
 local invites = {}
+-- hash-table for accepted invites.
+-- Used to determine whether watched gets notifiction when watcher detaches
+-- invited['invited_player'] = 'inviting_player'
+local invited = {}
 
 
 -- register privs after all mods have loaded as user may want to reuse other privs
@@ -138,6 +142,12 @@ local function detach(name_watcher)
 		-- set_pos seems to be very unreliable
 		-- this workaround helps though
 		after(0.1, function() watcher:set_pos(pos) end)
+
+	-- if watcher was invited, notify invitee that watcher has detached
+	if invited[name_watcher] then
+		invited[name_watcher] = nil
+		chat(state.target, '"' .. name_watcher
+			.. '" has stopped looking over your shoulder.')
 	end
 	original_state_delete(name)
 end -- detach
@@ -306,6 +316,7 @@ local function accept_invite(name_watcher)
 
 	attach(name_watcher, name_target)
 	invites[name_watcher] = nil
+	invited[name_watcher] = name_target
 	chat(name_target, '"' .. name_watcher .. '" is now attached to you.')
 	return true, 'OK, you have been attached to "' .. name_target .. '". To disable type /'
 		.. sm.command_detach
