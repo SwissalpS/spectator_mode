@@ -33,6 +33,9 @@ function Player:set_eye_offset(firstperson, thirdperson)
 	self._eye_offset_third = thirdperson
 end
 
+function Player:get_breath() return self._breath or 10 end
+function Player:set_breath(value) self._breath = tonumber(value) or self._breath end
+
 function ObjectRef:set_nametag_attributes(new_attributes)
 	if not self._nametag_attributes then self:get_nametag_attributes() end
 	for key, value in pairs(new_attributes) do
