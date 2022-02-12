@@ -100,15 +100,15 @@ end -- turn_off_hud_flags
 -- called by the detach command '/unwatch'
 -- called on logout if player is attached at that time
 -- called before attaching to another player
-local function detach(name)
+local function detach(name_watcher)
 	-- nothing to do
-	if not player_api.player_attached[name] then return end
+	if not player_api.player_attached[name_watcher] then return end
 
-	local watcher = get_player_by_name(name)
+	local watcher = get_player_by_name(name_watcher)
 	if not watcher then return end -- shouldn't ever happen
 
 	watcher:set_detach()
-	player_api.player_attached[name] = false
+	player_api.player_attached[name_watcher] = false
 	watcher:set_eye_offset()
 
 	local state = original_state_get(name)
@@ -127,10 +127,10 @@ local function detach(name)
 		collisionbox = state.collisionbox,
 	})
 
-	local privs = get_player_privs(name)
+	local privs = get_player_privs(name_watcher)
 	if privs.interact ~= state.priv_interact then
 		privs.interact = state.priv_interact
-		set_player_privs(name, privs)
+		set_player_privs(name_watcher, privs)
 	end
 
 	local pos = state.pos
