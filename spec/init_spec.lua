@@ -79,23 +79,11 @@ describe("Watching", function()
 		assert.equals(start_positions.SX.y, pos.y)
 		assert.equals(start_positions.SX.z, pos.z)
 	end)
---[[
 
-	it("creates channel", function()
-		SX:send_chat_message("/cc foo")
-		assert.not_nil(beerchat.channels["foo"])
 	end)
 
-	it("switches channels", function()
-		SX:send_chat_message("#foo")
-		assert.equals("foo", SX:get_meta():get_string("beerchat:current_channel"))
-		SX:send_chat_message("Everyone ignore me, this is just a test")
 	end)
 
-	it("deletes channel", function()
-		SX:send_chat_message("/dc foo")
-		assert.is_nil(beerchat.channels["foo"])
 	end)
---]]
 end)
 
