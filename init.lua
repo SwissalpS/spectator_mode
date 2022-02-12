@@ -128,7 +128,7 @@ local function detach(name_watcher)
 	watcher:hud_set_flags(state.hud_flags)
 	watcher:set_properties({
 		visual_size = state.visual_size,
-		makes_footstep_sound = true,
+		makes_footstep_sound = state.makes_footstep_sound,
 		collisionbox = state.collisionbox,
 	})
 
@@ -171,6 +171,7 @@ local function attach(name_watcher, name_target)
 	local state = {
 		collisionbox = table.copy(properties.collisionbox),
 		hud_flags = table.copy(watcher:hud_get_flags()),
+		makes_footstep_sound = properties.makes_footstep_sound,
 		nametag = table.copy(watcher:get_nametag_attributes()),
 		pos = vector_copy(watcher:get_pos()),
 		priv_interact = privs_watcher.interact,
