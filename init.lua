@@ -251,6 +251,7 @@ local function watchme(name_target, param)
 	end
 
 	local messages = {}
+	local count_invites = 0
 	local invitation_timeout_string = tostring(sm.invitation_timeout)
 	local invitation_postfix = '" has invited you to observe them. '
 			.. 'Accept with /' .. 	sm.command_accept
@@ -277,6 +278,7 @@ local function watchme(name_target, param)
 			return 'You may not invite "' .. name_watcher .. '".'
 		end
 
+		count_invites = count_invites + 1
 		invites[name_watcher] = name_target
 		after(sm.invitation_timeout, invite_timed_out, name_watcher)
 		-- notify invited
@@ -290,8 +292,12 @@ local function watchme(name_target, param)
 		table.insert(messages, invite(name_watcher))
 	end
 	-- notify invitee
-	return true, table.concat(messages, '\n')
-			.. '\nThe invitations expire in ' .. invitation_timeout_string .. ' seconds.'
+	local text = table.concat(messages, '\n')
+	if 0 < count_invites then
+		text = text .. '\nThe invitations expire in '
+			.. invitation_timeout_string .. ' seconds.'
+	end
+	return true, text
 end -- watchme
 
 
