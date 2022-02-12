@@ -17,6 +17,7 @@ spectator_mode = {
 local sm = spectator_mode
 local after = minetest.after
 local chat = minetest.chat_send_player
+local core_log = minetest.log
 local deserialize = minetest.deserialize
 local serialize = minetest.serialize
 local get_player_privs = minetest.get_player_privs
@@ -150,6 +151,9 @@ local function detach(name_watcher)
 			.. '" has stopped looking over your shoulder.')
 	end
 	original_state_delete(name)
+	core_log('action', '[spectator_mode] "' .. name_watcher
+		.. '" detached from "' .. state.target .. '"')
+
 end -- detach
 
 
@@ -192,6 +196,9 @@ local function attach(name_watcher, name_target)
 	player_api.player_attached[name_watcher] = true
 	local target = get_player_by_name(name_target)
 	watcher:set_attach(target, '', eye_pos)
+	core_log('action', '[spectator_mode] "' .. name_watcher
+		.. '" attached to "' .. name_target .. '"')
+
 end -- attach
 
 
