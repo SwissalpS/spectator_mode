@@ -96,13 +96,15 @@ local function original_state_delete(player)
 end -- original_state_delete
 
 
--- TODO: make sure this doesn't hide /postool hud
+-- this doesn't hide /postool hud, hunger bar and similar
 local function turn_off_hud_flags(player)
 	local flags = player:hud_get_flags()
 	local new_hud_flags = {}
 	for flag in pairs(flags) do
 		new_hud_flags[flag] = false
 	end
+	new_hud_flags.breathbar = flags.breathbar
+	new_hud_flags.healthbar = flags.healthbar
 	player:hud_set_flags(new_hud_flags)
 end -- turn_off_hud_flags
 
