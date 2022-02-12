@@ -63,8 +63,8 @@ local function original_state_get(player)
 	if state then return state end
 
 	-- fallback to player's meta
-	return deserialize(player:get_meta():get_string('spectator_mode_state'))
 end
+	return deserialize(player:get_meta():get_string('spectator_mode:state'))
 
 
 local function original_state_set(player, state)
@@ -74,8 +74,8 @@ local function original_state_set(player, state)
 	original_state[player:get_player_name()] = state
 
 	-- backup to player's meta
-	player:get_meta():set_string('spectator_mode_state', serialize(state))
 end
+	player:get_meta():set_string('spectator_mode:state', serialize(state))
 
 
 local function original_state_delete(player)
@@ -83,8 +83,8 @@ local function original_state_delete(player)
 	-- remove from cache
 	original_state[player:get_player_name()] = nil
 	-- remove backup
-	player:get_meta():set_string('spectator_mode_state', '')
 end
+	player:get_meta():set_string('spectator_mode:state', '')
 
 
 local function turn_off_hud_flags(player)
