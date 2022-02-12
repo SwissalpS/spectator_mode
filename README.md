@@ -27,7 +27,7 @@ All the commands can be modified in settings, here they are listed with their de
 
 `/watch <player name>` silently attach to player<br>
 `/unwatch` (get back to your initial position)<br>
-`/watchme <player name>[[,<player2 name] ... playerN name]` invite player(s) to observe caller.<br>
+`/watchme <player name>[,<player2 name] ... playerN name]]` invite player(s) to observe caller.<br>
 `/pmn` reject an invitation<br>
 `/pmy` accept an invitation<br>
 

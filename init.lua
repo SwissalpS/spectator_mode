@@ -415,8 +415,8 @@ minetest.register_chatcommand(sm.command_detach, {
 
 
 minetest.register_chatcommand(sm.command_invite, {
-	description = 'Invite a player to watch you',
-	params = '<player name>',
+	description = 'Invite player(s) to watch you',
+	params = '<player name>[,<player2 name>[ <playerN name>]' .. ']',
 	privs = { [sm.priv_invite] = true },
 	func = watchme,
 })
