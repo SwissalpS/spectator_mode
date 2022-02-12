@@ -63,8 +63,8 @@ local function original_state_get(player)
 	if state then return state end
 
 	-- fallback to player's meta
-end
 	return deserialize(player:get_meta():get_string('spectator_mode:state'))
+end -- original_state_get
 
 
 local function original_state_set(player, state)
@@ -74,8 +74,8 @@ local function original_state_set(player, state)
 	original_state[player:get_player_name()] = state
 
 	-- backup to player's meta
-end
 	player:get_meta():set_string('spectator_mode:state', serialize(state))
+end -- original_state_set
 
 
 local function original_state_delete(player)
@@ -83,8 +83,8 @@ local function original_state_delete(player)
 	-- remove from cache
 	original_state[player:get_player_name()] = nil
 	-- remove backup
-end
 	player:get_meta():set_string('spectator_mode:state', '')
+end -- original_state_delete
 
 
 local function turn_off_hud_flags(player)
@@ -94,7 +94,7 @@ local function turn_off_hud_flags(player)
 		new_hud_flags[flag] = false
 	end
 	player:hud_set_flags(new_hud_flags)
-end
+end -- turn_off_hud_flags
 
 
 -- called by the detach command '/unwatch'
@@ -140,7 +140,7 @@ local function detach(name)
 		after(0.1, function() watcher:set_pos(pos) end)
 	end
 	original_state_delete(name)
-end
+end -- detach
 
 
 -- both players are online and all checks have been done when this
@@ -182,15 +182,19 @@ local function attach(name_watcher, name_target)
 	player_api.player_attached[name_watcher] = true
 	local target = get_player_by_name(name_target)
 	watcher:set_attach(target, '', eye_pos)
-end
+end -- attach
 
 
 -- called by '/watch' command
 local function watch(name_watcher, name_target)
-	if name_watcher == name_target then return true, 'You may not watch yourself.' end
+	if name_watcher == name_target then
+		return true, 'You may not watch yourself.'
+	end
 
 	local target = get_player_by_name(name_target)
-	if not target then return true, 'Invalid target name "' .. name_target .. '"' end
+	if not target then
+		return true, 'Invalid target name "' .. name_target .. '"'
+	end
 
 	-- avoid infinite loops
 	-- TODO: should we just watch the watched one then? Griefers can be a nuisance both ways.
@@ -200,7 +204,8 @@ local function watch(name_watcher, name_target)
 	attach(name_watcher, name_target)
 	return true, 'Watching "' .. name_target .. '" at '
 		.. minetest.pos_to_string(vector_round(target:get_pos()))
-end
+
+end -- watch
 
 
 local function invite_timed_out(name_watcher)
@@ -210,7 +215,7 @@ local function invite_timed_out(name_watcher)
 	chat(invites[name_watcher], 'Invitation to "' .. name_watcher .. '" timed-out.')
 	chat(name_watcher, 'Invitation from "' .. invites[name_watcher] .. '" timed-out.')
 	invites[name_watcher] = nil
-end
+end -- invite_timed_out
 
 
 -- called by '/watchme' command
@@ -231,7 +236,9 @@ local function watchme(name_target, param)
 			.. ', deny with /' .. sm.command_deny .. '.\n'
 			.. 'The invite expires in ' .. invitation_timeout_string .. ' seconds.'
 	local function invite(name_watcher)
-		if name_watcher == name_target then return 'You may not watch yourself.' end
+		if name_watcher == name_target then
+			return 'You may not watch yourself.'
+		end
 
 		if original_state[name_watcher] then
 			return '"' .. name_watcher .. '" is busy watching another player.'
@@ -256,7 +263,7 @@ local function watchme(name_target, param)
 
 		-- notify invitee
 		return 'You have invited "' .. name_watcher .. '".'
-	end
+	end -- invite()
 
 	for name_watcher in string.gmatch(param, '[^%s,]+') do
 		table.insert(messages, invite(name_watcher))
@@ -264,7 +271,7 @@ local function watchme(name_target, param)
 	-- notify invitee
 	return true, table.concat(messages, '\n')
 			.. '\nThe invitations expire in ' .. invitation_timeout_string .. ' seconds.'
-end
+end -- watchme
 
 
 -- this function only checks privs etc. Mechanics are already checked in watchme()
@@ -286,7 +293,7 @@ function spectator_mode.is_permited_to_invite(name_target, name_watcher)
 	end
 
 	return true
-end
+end -- is_permited_to_invite
 -- luacheck: unused args
 
 
@@ -302,7 +309,8 @@ local function accept_invite(name_watcher)
 	chat(name_target, '"' .. name_watcher .. '" is now attached to you.')
 	return true, 'OK, you have been attached to "' .. name_target .. '". To disable type /'
 		.. sm.command_detach
-end
+
+end -- accept_invite
 
 
 -- called by the deny command '/smn'
@@ -314,7 +322,7 @@ local function decline_invite(name_watcher)
 	chat(invites[name_watcher], '"' .. name_watcher .. '" declined the invite.')
 	invites[name_watcher] = nil
 	return true, 'OK, declined invite.'
-end
+end -- decline_invite
 
 
 minetest.register_chatcommand(sm.command_attach, {
