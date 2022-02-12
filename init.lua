@@ -1,8 +1,13 @@
 -- NOTE: in the output texts, the names are always in double quotes because some players have
 --	names that can be confusing without the quotes.
--- TODO: technically it would be possible to chain observe. Would have to climb the parent tree
+-- IDEA: technically it would be possible to chain observe. Would have to climb the parent tree
 --	making sure there is nothing circular happening. Including checking all the children.
 --	A lot can go wrong with that, so it has been left out for now.
+--	Another complication to this is that there are many combinations of client<->server
+--	software versions to consider.
+-- IDEA: might be nice to have a /send_home (<player>|all) command for invitie to detach
+--	invited guests again.
+--	Currently player can force detachment by logging off.
 spectator_mode = {
 	version = 20220208,
 	command_accept = minetest.settings:get('spectator_mode.command_accept') or 'smy',
@@ -92,6 +97,7 @@ local function original_state_delete(player)
 end -- original_state_delete
 
 
+-- TODO: make sure this doesn't hide /postool hud
 local function turn_off_hud_flags(player)
 	local flags = player:hud_get_flags()
 	local new_hud_flags = {}
@@ -120,7 +126,7 @@ local function detach(name_watcher)
 	-- nothing else to do
 	if not state then return end
 
-	-- TODO: do we need to have backward compat code?
+	-- NOTE: older versions of MT/MC may not have this
 	watcher:set_nametag_attributes({
 		color = state.nametag.color,
 		bgcolor = state.nametag.bgcolor
@@ -257,6 +263,9 @@ local function watchme(name_target, param)
 			.. 'Accept with /' .. 	sm.command_accept
 			.. ', deny with /' .. sm.command_deny .. '.\n'
 			.. 'The invite expires in ' .. invitation_timeout_string .. ' seconds.'
+
+	-- checks whether watcher may be invited by target and returns error message if not
+	-- if permitted, invites watcher and returns success message
 	local function invite(name_watcher)
 		if name_watcher == name_target then
 			return 'You may not watch yourself.'
