@@ -116,7 +116,7 @@ local function detach(name_watcher)
 	player_api.player_attached[name_watcher] = false
 	watcher:set_eye_offset()
 
-	local state = original_state_get(name)
+	local state = original_state_get(watcher)
 	-- nothing else to do
 	if not state then return end
 
