@@ -33,6 +33,8 @@ All the commands can be modified in settings, here they are listed with their de
 
 ## Settings
 
+All settings can be set in minetest.conf or accessed via mod with the global field of same name.
+
 - **spectator_mode.command_accept** (smy)<br>
  After an invite has successfully been sent, the watcher may accept it with this command.
 - **spectator_mode.command_deny** (smn)<br>
