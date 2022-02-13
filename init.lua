@@ -118,6 +118,14 @@ function spectator_mode.keep_alive(name_watcher)
 end -- keep_alive
 
 
+-- can be overriden to manipulate new_hud_flags
+-- flags are the current hud_flags of player
+function spectator_mode.turn_off_hud_hook(player, flags, new_hud_flags)
+	new_hud_flags.breathbar = flags.breathbar
+	new_hud_flags.healthbar = flags.healthbar
+end -- turn_off_hud_hook
+
+
 -- this doesn't hide /postool hud, hunger bar and similar
 local function turn_off_hud_flags(player)
 	local flags = player:hud_get_flags()
@@ -125,8 +133,7 @@ local function turn_off_hud_flags(player)
 	for flag in pairs(flags) do
 		new_hud_flags[flag] = false
 	end
-	new_hud_flags.breathbar = flags.breathbar
-	new_hud_flags.healthbar = flags.healthbar
+	sm.turn_off_hud_hook(player, flags, new_hud_flags)
 	player:hud_set_flags(new_hud_flags)
 end -- turn_off_hud_flags
 
