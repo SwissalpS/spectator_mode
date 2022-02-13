@@ -45,6 +45,9 @@ To invite another player to observe player that issued this command.
 To start observing another player, issue this command.
 - **spectator_mode.invitation_timeout** (60)<br>
 Invitations invalidate after this many seconds if they haven't been accepted or denied.
+- *spectator_mode.keep_all_observers_alive*** (false)<br>
+Not only moderators are kept oxygenated, but all observers when this is set to true.<br>
+For auto-feeding the spectator_mode.keep_alive() function needs to be overriden by another mod.
 - **spectator_mode.priv_invite** (interact)<br>
 The priv needed to send observation invites.
 - **spectator_mode.priv_watch** (watch)<br>
@@ -61,7 +64,7 @@ Other mods can override `spectator_mode.is_permited_to_invite(name_target, name_
 conditions of when who can invite whom.
 
 Moderators are kept breathing when observing via '/watch' command. Other mods can override this to
-add more functionality: `spectator_mode.keep_allive(name_watcher)`.
+add more functionality: `spectator_mode.keep_alive(name_watcher)`.
 
 `spectator_mode.on_respawnplayer(watcher)` can be overriden to adjust what happens when an attached player
 dies and respawns. Without change, the observer is detached for a split second then re-atached.
