@@ -63,6 +63,9 @@ conditions of when who can invite whom.
 Moderators are kept breathing when observing via '/watch' command. Other mods can override this to
 add more functionality: `spectator_mode.keep_allive(name_watcher)`.
 
+`spectator_mode.on_respawnplayer(watcher)` can be overriden to adjust what happens when an attached player
+dies and respawns. Without change, the observer is detached for a split second then re-atached.
+
 ## Copyright
 
 Original mod DWTFYW Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
