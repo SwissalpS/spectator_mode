@@ -96,6 +96,23 @@ local function original_state_delete(player)
 end -- original_state_delete
 
 
+-- keep moderators alive when they used '/watch' command
+-- overridable as servers may want to change this
+function spectator_mode.keep_allive(name_watcher)
+	local watcher = get_player_by_name(name_watcher)
+	if not watcher then return end -- logged off
+
+	-- still attached?
+	if not original_state[name_watcher] then return end
+
+	-- has enough air? (avoid showing bubbles when not needed)
+	if 8 > watcher:get_breath() then
+		watcher:set_breath(9)
+	end
+	after(5, sm.keep_allive, name_watcher)
+end -- keep_allive
+
+
 -- this doesn't hide /postool hud, hunger bar and similar
 local function turn_off_hud_flags(player)
 	local flags = player:hud_get_flags()
@@ -210,6 +227,10 @@ local function attach(name_watcher, name_target)
 	core_log('action', '[spectator_mode] "' .. name_watcher
 		.. '" attached to "' .. name_target .. '"')
 
+	if not invites[name_watcher] then
+		-- used '/watch' to sneak up without invite -> moderator
+		after(3, sm.keep_allive, name_watcher)
+	end
 end -- attach
 
 
