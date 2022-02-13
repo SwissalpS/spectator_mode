@@ -10,6 +10,7 @@ globals = {
 
 read_globals = {
 	-- Stdlib
+	string = { fields = { "split" } },
 	table = { fields = { "copy", "insert" } },
 
 	-- Minetest

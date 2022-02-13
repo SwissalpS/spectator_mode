@@ -136,10 +136,12 @@ end -- keep_alive
 
 -- can be overriden to manipulate new_hud_flags
 -- flags are the current hud_flags of player
+-- luacheck: no unused args
 function spectator_mode.turn_off_hud_hook(player, flags, new_hud_flags)
 	new_hud_flags.breathbar = flags.breathbar
 	new_hud_flags.healthbar = flags.healthbar
 end -- turn_off_hud_hook
+-- luacheck: unused args
 
 
 -- this doesn't hide /postool hud, hunger bar and similar
