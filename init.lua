@@ -15,7 +15,9 @@ spectator_mode = {
 	command_detach = minetest.settings:get('spectator_mode.command_detach') or 'unwatch',
 	command_invite = minetest.settings:get('spectator_mode.command_invite') or 'watchme',
 	command_attach = minetest.settings:get('spectator_mode.command_attach') or 'watch',
-	invitation_timeout = tonumber(minetest.settings:get('spectator_mode.invitation_timeout') or 1 * 60),
+	invitation_timeout = tonumber(minetest.settings:get(
+		'spectator_mode.invitation_timeout') or 1 * 60),
+
 	priv_invite = minetest.settings:get('spectator_mode.priv_invite') or 'interact',
 	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
 }
