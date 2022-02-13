@@ -25,21 +25,22 @@ spectator_mode = {
 	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
 }
 local sm = spectator_mode
-local temp = minetest.settings:get('spectator_mode.extra_observe_privs') or ''
-sm.extra_observe_privs, sm.extra_observe_privs_moderator = {}, nil
-for _, priv in ipairs(temp:split(',')) do
-	sm.extra_observe_privs[priv] = true
-end
-temp = minetest.settings:get('spectator_mode.extra_observe_privs_moderator')
-if (not temp) or ('' == temp) then
-	sm.extra_observe_privs_moderator = sm.extra_observe_privs
-else
-	sm.extra_observe_privs_moderator = {}
+do
+	local temp = minetest.settings:get('spectator_mode.extra_observe_privs') or ''
+	sm.extra_observe_privs, sm.extra_observe_privs_moderator = {}, nil
 	for _, priv in ipairs(temp:split(',')) do
-		sm.extra_observe_privs_moderator[priv] = true
+		sm.extra_observe_privs[priv] = true
+	end
+	temp = minetest.settings:get('spectator_mode.extra_observe_privs_moderator')
+	if (not temp) or ('' == temp) then
+		sm.extra_observe_privs_moderator = sm.extra_observe_privs
+	else
+		sm.extra_observe_privs_moderator = {}
+		for _, priv in ipairs(temp:split(',')) do
+			sm.extra_observe_privs_moderator[priv] = true
+		end
 	end
 end
-temp = nil
 -- pull some global references to local space
 local after = minetest.after
 local chat = minetest.chat_send_player
