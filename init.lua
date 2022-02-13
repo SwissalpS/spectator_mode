@@ -461,7 +461,6 @@ minetest.register_chatcommand(sm.command_attach, {
 minetest.register_chatcommand(sm.command_detach, {
 	description = 'Unwatch a player',
 	privs = { },
-	-- luacheck: no unused args
 	func = detach,
 })
 
