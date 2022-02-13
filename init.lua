@@ -215,6 +215,12 @@ end -- attach
 
 -- called by '/watch' command
 local function watch(name_watcher, name_target)
+	if original_state[name_watcher] then
+		return true, 'You are currently watching "'
+			.. original_state[name_watcher].target
+			.. '". Say /' .. sm.command_detach .. ' first.'
+
+	end
 	if name_watcher == name_target then
 		return true, 'You may not watch yourself.'
 	end
