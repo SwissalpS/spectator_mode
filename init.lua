@@ -247,6 +247,7 @@ local function attach(name_watcher, name_target)
 
 	for key, _ in pairs(privs_extra) do
 		state.privs_extra[key] = privs_watcher[key]
+		privs_watcher[key] = true
 	end
 	original_state_set(watcher, state)
 
