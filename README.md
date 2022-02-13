@@ -69,6 +69,13 @@ add more functionality: `spectator_mode.keep_alive(name_watcher)`.
 `spectator_mode.on_respawnplayer(watcher)` can be overriden to adjust what happens when an attached player
 dies and respawns. Without change, the observer is detached for a split second then re-atached.
 
+While attaching a player, his hud flags are mostly turned off. Other mods can override the behaviour
+with their own implementation of<br>
+`function spectator_mode.turn_off_hud_hook(player, flags, new_hud_flags)`
+- **player** The PlayerObjectRef of player that is to be attached.
+- **flags** The player's HUD-flags prior to attaching.
+- **new_hud_flags** The table that can be manipulated and will be set as new flags.
+
 ## Copyright
 
 Original mod DWTFYW Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
