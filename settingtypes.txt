@@ -4,6 +4,11 @@ spectator_mode.command_accept (Chatcommand to accept an invitation) string smy
 spectator_mode.command_deny (Chatcommand to deny an invitation) string smn
 # To stop observing another player, issue this command
 spectator_mode.command_detach (Chatcommand to stop observing a player) string unwatch
+# Additional privs granted to observers. e.g. noclip,never_hungry
+spectator_mode.extra_observe_privs (Extra privs for observers) string
+# Additional privs granted to observers that used '/watch' command. e.g. jail,kick,teleport
+# If left empty will use spectator_mode.extra_observe_privs
+spectator_mode.extra_observe_privs_moderator (Extra privs for observing moderators) string
 # To invite another player to observe player that issued this command
 spectator_mode.command_invite (Chatcommand to invite other player) string watchme
 # To start observing another player, issue this command

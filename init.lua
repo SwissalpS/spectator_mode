@@ -25,6 +25,22 @@ spectator_mode = {
 	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
 }
 local sm = spectator_mode
+local temp = minetest.settings:get('spectator_mode.extra_observe_privs') or ''
+sm.extra_observe_privs, sm.extra_observe_privs_moderator = {}, nil
+for _, priv in ipairs(temp:split(',')) do
+	sm.extra_observe_privs[priv] = true
+end
+temp = minetest.settings:get('spectator_mode.extra_observe_privs_moderator')
+if (not temp) or ('' == temp) then
+	sm.extra_observe_privs_moderator = sm.extra_observe_privs
+else
+	sm.extra_observe_privs_moderator = {}
+	for _, priv in ipairs(temp:split(',')) do
+		sm.extra_observe_privs_moderator[priv] = true
+	end
+end
+temp = nil
+-- pull some global references to local space
 local after = minetest.after
 local chat = minetest.chat_send_player
 local core_log = minetest.log
@@ -168,11 +184,16 @@ local function detach(name_watcher)
 		collisionbox = state.collisionbox,
 	})
 
+	-- restore privs
 	local privs = get_player_privs(name_watcher)
-	if privs.interact ~= state.priv_interact then
-		privs.interact = state.priv_interact
-		set_player_privs(name_watcher, privs)
+	privs.interact = state.priv_interact
+	local privs_extra = invited[name_watcher] and sm.extra_observe_privs
+		or sm.extra_observe_privs_moderator
+
+	for key, _ in pairs(privs_extra) do
+		privs[key] = state.privs_extra[key]
 	end
+	set_player_privs(name_watcher, privs)
 
 	-- set_pos seems to be very unreliable
 	-- this workaround helps though
@@ -214,9 +235,16 @@ local function attach(name_watcher, name_target)
 		nametag = watcher:get_nametag_attributes(),
 		pos = watcher:get_pos(),
 		priv_interact = privs_watcher.interact,
+		privs_extra = {},
 		target = name_target,
 		visual_size = properties.visual_size,
 	}
+	local privs_extra = invites[name_watcher] and sm.extra_observe_privs
+		or sm.extra_observe_privs_moderator
+
+	for key, _ in pairs(privs_extra) do
+		state.privs_extra[key] = privs_watcher[key]
+	end
 	original_state_set(watcher, state)
 
 	-- set some attributes
