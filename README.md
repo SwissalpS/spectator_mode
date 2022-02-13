@@ -60,6 +60,9 @@ Before sending invites, beerchat's player meta entry is checked to make sure mut
 Other mods can override `spectator_mode.is_permited_to_invite(name_target, name_watcher)` to add own
 conditions of when who can invite whom.
 
+Moderators are kept breathing when observing via '/watch' command. Other mods can override this to
+add more functionality: `spectator_mode.keep_allive(name_watcher)`.
+
 ## Copyright
 
 Original mod DWTFYW Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
