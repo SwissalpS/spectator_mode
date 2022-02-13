@@ -9,7 +9,7 @@
 --	invited guests again.
 --	Currently player can force detachment by logging off.
 spectator_mode = {
-	version = 20220212,
+	version = 20220213,
 	command_accept = minetest.settings:get('spectator_mode.command_accept') or 'smy',
 	command_deny = minetest.settings:get('spectator_mode.command_deny') or 'smn',
 	command_detach = minetest.settings:get('spectator_mode.command_detach') or 'unwatch',
