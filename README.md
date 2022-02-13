@@ -41,6 +41,11 @@ All settings can be set in minetest.conf or accessed via mod with the global fie
  After an invite has successfully been sent, the watcher may decline it with this command.
 - **spectator_mode.command_detach** (unwatch)<br>
 To stop observing another player, issue this command.
+- **spectator_mode.extra_observe_privs** ()<br>
+Additional privs granted to observers. e.g. noclip,never_hungry
+- **spectator_mode.extra_observe_privs_moderator** (<spectator_mode.extra_observe_privs>)<br>
+Additional privs granted to observers that used '/watch' command. e.g. jail,kick,teleport<br>
+If left empty, will use spectator_mode.extra_observe_privs
 - **spectator_mode.command_invite** (watchme)<br>
 To invite another player to observe player that issued this command.
 - **spectator_mode.command_attach** (watch)<br>
