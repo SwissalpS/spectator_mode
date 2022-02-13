@@ -18,6 +18,9 @@ spectator_mode = {
 	invitation_timeout = tonumber(minetest.settings:get(
 		'spectator_mode.invitation_timeout') or 1 * 60),
 
+	keep_all_observers_alive = minetest.settings:get_bool(
+		'spectator_mode.keep_all_observers_alive', false),
+
 	priv_invite = minetest.settings:get('spectator_mode.priv_invite') or 'interact',
 	priv_watch = minetest.settings:get('spectator_mode.priv_watch') or 'watch',
 }
@@ -229,8 +232,9 @@ local function attach(name_watcher, name_target)
 	core_log('action', '[spectator_mode] "' .. name_watcher
 		.. '" attached to "' .. name_target .. '"')
 
-	if not invites[name_watcher] then
-		-- used '/watch' to sneak up without invite -> moderator
+	if sm.keep_all_observers_alive or (not invites[name_watcher]) then
+		-- server keeps all observers alive
+		-- or moderator used '/watch' to sneak up without invite
 		after(3, sm.keep_alive, name_watcher)
 	end
 end -- attach

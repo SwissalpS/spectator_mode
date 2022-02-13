@@ -10,6 +10,10 @@ spectator_mode.command_invite (Chatcommand to invite other player) string watchm
 spectator_mode.command_attach (Chatcommand to start observing a player) string watch
 # Invitations invalidate after this many seconds if they haven't been accepted or denied
 spectator_mode.invitation_timeout (Duration invites are valid for in seconds) int 60
+# Not only moderators are kept oxygenated, but all observers when this is set to true.
+# For auto-feeding the spectator_mode.keep_alive() function needs to be overriden by
+# another mod.
+spectator_mode.keep_all_observers_alive (Keep all observers alive) bool false
 # The priv needed to send observation invites.
 spectator_mode.priv_invite (Player priv to invite others to observe) string interact
 # The priv needed to silently observe any player that isn't currently watching another one
