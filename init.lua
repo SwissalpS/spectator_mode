@@ -475,9 +475,9 @@ end -- on_leaveplayer
 -- different servers may want different behaviour, they can
 -- override this function
 function spectator_mode.on_respawnplayer(watcher)
---    * Called when player is to be respawned
---    * Called _before_ repositioning of player occurs
---    * return true in func to disable regular player placement
+--	* Called when player is to be respawned
+--	* Called _before_ repositioning of player occurs
+--	* return true in func to disable regular player placement
 	local state = original_state_get(watcher)
 	if not state then return end
 
