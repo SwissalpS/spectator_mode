@@ -8,6 +8,7 @@
 -- IDEA: might be nice to have a /send_home (<player>|all) command for invitie to detach
 --	invited guests again.
 --	Currently player can force detachment by logging off.
+-- IDEA: a callback/hook for when detaching. Counterpart of turn_off_hud_hook()
 spectator_mode = {
 	version = 20220214,
 	command_accept = minetest.settings:get('spectator_mode.command_accept') or 'smy',
