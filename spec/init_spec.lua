@@ -1,3 +1,6 @@
+-- main unit testing file that mineunit picks up
+-- https://github.com/S-S-X/mineunit
+
 require("mineunit")
 
 mineunit("core")
@@ -9,6 +12,8 @@ mineunit('common/after')
 fixture('player_api')
 -- add some not yet included functions
 fixture('mineunit_extensions')
+-- mimic beerchat.has_player_muted_player
+fixture('beerchat')
 
 local function pd1(m) print(dump(m)) end
 local function pd(...) for _, m in ipairs({...}) do pd1(m) end end
@@ -94,11 +99,21 @@ describe('Watching:', function()
 	end)
 
 	it('boss tries to unwatch when not watching', function()
-		-- hmm, this is rather pointless as it's noop if player isn't attached
 		reset_chatlog()
 		boss:send_chat_message('/unwatch')
 		mineunit:execute_globalstep(1)
-		assert.equals(0, #chatlog, 'there was an error message sent to boss')
+		assert.equals(1, #chatlog, 'unexpected chatlog count')
+		assert.is_not_nil(chatlog[1].message:find('not observing'),
+			'unexpected chat response')
+	end)
+
+	it('player receives message when issuing /unwatch while not attached', function()
+		reset_chatlog()
+		dude1:send_chat_message('/unwatch')
+		mineunit:execute_globalstep(1)
+		assert.equals(1, #chatlog, 'unexpected chatlog count')
+		assert.is_not_nil(chatlog[1].message:find('not observing'),
+			'unexpected chat response')
 	end)
 
 	it('invitations are sent and expire', function()
